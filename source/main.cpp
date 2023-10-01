@@ -19,7 +19,7 @@ typedef void (*SolveODEMethodType)(
 
 Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> ode_system(double t, const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x) {
     MultiInterval<double> k1 = {Interval<double>(0.577)};
-    MultiInterval<double> k2 = {Interval<double>(0.410, 0.422)};
+    MultiInterval<double> k2 = {Interval<double>(0.01, 1)};
 
     Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> dx(3);
     dx[0] = -k1 * x[0];
