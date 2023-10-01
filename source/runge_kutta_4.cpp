@@ -1,8 +1,8 @@
 #include "common_methods.h"
 
-Eigen::VectorXd rungeKutta4(
-    const Eigen::VectorXd &x0,
-    Eigen::VectorXd (*ode_system)(double t, const Eigen::VectorXd &x),
+Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> rungeKutta4(
+    const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x0,
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> (*ode_system)(double t, const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x),
     double t,
     double h
 );
@@ -16,14 +16,14 @@ __declspec(dllexport) const char* getMethodName()
 
 __declspec(dllexport) void solveODE(
     const std::string &csv_filename,    // output filename
-    Eigen::VectorXd (*ode_system)(double t, const Eigen::VectorXd &x),  // return dx/dt vector
-    const Eigen::VectorXd &x0,  // start values
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> (*ode_system)(double t, const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x),  // return dx/dt vector
+    const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x0,  // start values
     double t0,  // start time
     double h,   // step size
     double T    // end time
 )
 {
-    Eigen::VectorXd x = x0;
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> x = x0;
     double t = t0;
 
     // Открываем файл для записи
@@ -44,16 +44,16 @@ __declspec(dllexport) void solveODE(
 }
 
 // Метод Рунге-Кутты 4-го порядка
-Eigen::VectorXd rungeKutta4(
-    const Eigen::VectorXd &x0,
-    Eigen::VectorXd (*ode_system)(double t, const Eigen::VectorXd &x),
+Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> rungeKutta4(
+    const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x0,
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> (*ode_system)(double t, const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x),
     double t,
     double h
 ) {
-    Eigen::VectorXd k1 = ode_system(t, x0);
-    Eigen::VectorXd k2 = ode_system(t, x0 + 0.5 * h * k1);
-    Eigen::VectorXd k3 = ode_system(t, x0 + 0.5 * h * k2);
-    Eigen::VectorXd k4 = ode_system(t, x0 + h * k3);
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> k1 = ode_system(t, x0);
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> k2 = ode_system(t, x0 + Interval<double>(0.5) * Interval<double>(h) * k1);
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> k3 = ode_system(t, x0 + Interval<double>(0.5) * Interval<double>(h) * k2);
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> k4 = ode_system(t, x0 + Interval<double>(h) * k3);
 
-    return x0 + (h / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
+    return x0 + Interval<double>(h / 6.0) * (k1 + Interval<double>(2.0) * k2 + Interval<double>(2.0) * k3 + k4);
 }

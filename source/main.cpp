@@ -1,24 +1,27 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <fstream>
-#include <windows.h>
+#include <interval_math.h>
 #include <filesystem>
+#include <windows.h>
+
+using namespace interval_math;
 
 typedef const char * (*GetMethodNameMethodType)();
 typedef void (*SolveODEMethodType)(
     const std::string &csv_filename,    // output filename
-    Eigen::VectorXd (*system)(double t, const Eigen::VectorXd &x),  // return dx/dt vector
-    const Eigen::VectorXd &x0,  // start values
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> (*system)(double t, const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x),  // return dx/dt vector
+    const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x0,  // start values
     double t0,  // start time
     double h,   // step size
     double T    // end time
 );
 
-Eigen::VectorXd ode_system(double t, const Eigen::VectorXd &x) {
-    double k1 = 0.577;
-    double k2 = 0.422;
+Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> ode_system(double t, const Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> &x) {
+    MultiInterval<double> k1 = {Interval<double>(0.577)};
+    MultiInterval<double> k2 = {Interval<double>(0.410, 0.422)};
 
-    Eigen::VectorXd dx(3);
+    Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> dx(3);
     dx[0] = -k1 * x[0];
     dx[1] = k1 * x[0] - k2 * x[1];
     dx[2] = k2 * x[1];
@@ -52,7 +55,18 @@ int main(int argc, char **argv) {
                 return EXIT_FAILURE;
             }
 
-            solveODE("result_" + std::string(getMethodName()) + ".csv", ode_system, Eigen::Vector3d(1, 0, 0), 0, 0.01, 10.0);
+            Eigen::Vector<MultiInterval<double>, Eigen::Dynamic> x0(3);
+            x0[0] = {Interval<double>(1.0)};
+            x0[1] = {Interval<double>(0.0)};
+            x0[2] = {Interval<double>(0.0)};
+            solveODE(
+                "result_" + std::string(getMethodName()) + ".csv",
+                ode_system,
+                x0,
+                0.0,
+                0.01,
+                10.0
+            );
 
             FreeLibrary(hGetProcIDDLL);
 

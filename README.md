@@ -13,12 +13,24 @@
 ## Клонирование репозитория
 
 ```sh
-git clone https://github.com/sbrepo2022/ODE_Solver_Example.git
+git clone --recurse-submodules https://github.com/sbrepo2022/ODE_Solver_Example.git
+```
+
+Если репозиторий был склонирован без `--recurse-submodules` то выполнить дополнительно:
+
+```sh
+git submodule update --init --recursive
 ```
 
 ## Сборка
 
-В корневой директории проекта:
+При первой сборке сначала (в корневой директории проекта):
+
+```sh
+sh ./configure.sh
+```
+
+Затем при каждой сборке:
 
 ```sh
 sh ./build.sh
