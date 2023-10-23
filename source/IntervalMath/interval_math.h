@@ -141,13 +141,17 @@ public:
 
 
     friend std::ostream & operator<<(std::ostream & out, const ExtendedSet<T> & es) {
+        std::stringstream ss;
+
         NumType es_type = getNumType(es);
-        if (es_type == NumType::NEGATIVE_INFINITY) out << "-Infinity";
-        else if (es_type == NumType::NEGATIVE_NUMBER) out << es.sign_num();
-        else if (es_type == NumType::NEGATIVE_ZERO) out << "-0";
-        else if (es_type == NumType::POSITIVE_ZERO) out << "+0";
-        else if (es_type == NumType::POSITIVE_NUMBER) out << es.sign_num();
-        else if (es_type == NumType::POSITIVE_INFINITY) out << "+Infinity";
+        if (es_type == NumType::NEGATIVE_INFINITY) ss << "-Infinity";
+        else if (es_type == NumType::NEGATIVE_NUMBER) ss << es.sign_num();
+        else if (es_type == NumType::NEGATIVE_ZERO) ss << "-0";
+        else if (es_type == NumType::POSITIVE_ZERO) ss << "+0";
+        else if (es_type == NumType::POSITIVE_NUMBER) ss << es.sign_num();
+        else if (es_type == NumType::POSITIVE_INFINITY) ss << "+Infinity";
+
+        out << ss.str();
         return out;
     }
 
@@ -398,7 +402,9 @@ public:
 
 
     friend std::ostream & operator<<(std::ostream & out, const Interval<T> & interval) {
-        out << "[" << interval.a << ";" << interval.b << "]";
+        std::stringstream ss;
+        ss << "[" << interval.a << ";" << interval.b << "]";
+        out << ss.str();
         return out;
     }
 
@@ -524,12 +530,15 @@ public:
 
 
     friend std::ostream & operator<<(std::ostream & out, const MultiInterval<T> & m_interval) {
-        out << "{";
+        std::stringstream ss;
+        ss << "{";
         for (int i = 0; i < m_interval.intervals.size(); i++) {
-            out << m_interval.intervals[i];
-            if (i < m_interval.intervals.size() - 1) out << ", ";
+            ss << m_interval.intervals[i];
+            if (i < m_interval.intervals.size() - 1) ss << ", ";
         }
-        out << "}";
+        ss << "}";
+
+        out << ss.str();
         return out;
     }
 
